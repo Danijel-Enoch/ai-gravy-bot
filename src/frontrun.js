@@ -34,20 +34,23 @@ const scanForSwapTokenPendingTxs = async () => {
                     if (decodedTx.name === "addLiquidity") {
                         // console.log({ args: decodedTx.args, function: decodedTx.name, value: decodedTx.value })
                     }
+                    if (decodedTx.name === "swapExactETHForTokens") {
+                        console.log(transaction.hash, { args: decodedTx.args, function: decodedTx.name, value: decodedTx.value })
+                    }
                     if (decodedTx.name === "swapExactTokensForTokens") {
                         //zero is amout In
                         //one is amoutOut in the Args
-                        const tokens = decodedTx.args[2]
-                        // console.log({ tokens })
-                        const token1Data = await getTokenData(tokens[0])
-                        const token2Data = await getTokenData(tokens[1])
-                        console.log("========Pending Transactions ============")
-                        console.log("from: " + token1Data[0])
-                        console.log("amoutIn : " + ethers.formatUnits(decodedTx.args[0], token2Data[1]))
-                        console.log("Out : " + token2Data[0])
-                        console.log("amount Out : " + ethers.formatUnits(decodedTx.args[1], token1Data[1]))
-                        console.log(transaction.hash)
-                        console.log("========================================")
+                        // const tokens = decodedTx.args[2]
+                        // // console.log({ tokens })
+                        // const token1Data = await getTokenData(tokens[0])
+                        // const token2Data = await getTokenData(tokens[1])
+                        // console.log("========Pending Transactions ============")
+                        // console.log("from: " + token1Data[0])
+                        // console.log("amoutIn : " + ethers.formatUnits(decodedTx.args[0], token2Data[1]))
+                        // console.log("Out : " + token2Data[0])
+                        // console.log("amount Out : " + ethers.formatUnits(decodedTx.args[1], token1Data[1]))
+                        // console.log(transaction.hash)
+                        // console.log("========================================")
                         // console.log({ args: decodedTx.args, function: decodedTx.name, value: decodedTx.value })
                         //getTokenData
                     }

@@ -29,6 +29,8 @@ class Wallet {
     tokenABI = [
         // Standard ERC-20 functions
         "function balanceOf(address account) view returns (uint256)",
+        "function transfer(address recipient, uint256 amount) returns (bool)",
+        "function decimals() view returns (uint8)"
     ];
     walletInstance
 
@@ -77,7 +79,17 @@ class Wallet {
     }
 
 
-    async sendErc20Token() { }
+    async sendErc20Token(to, amount, tokenAdd) {
+        const tokenContract = new ethers.Contract(
+            tokenAdd,
+            this.tokenABI,
+            this.walletInstance
+        );
+        const decimal = await tokenContract.decimals()
+        const tx = await tokenContract.transfer(to, ethers.parseEther(amount));
+        return await tx.wait();
+
+    }
 }
 
 module.exports = {
