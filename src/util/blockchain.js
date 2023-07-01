@@ -30,7 +30,10 @@ class Wallet {
         // Standard ERC-20 functions
         "function balanceOf(address account) view returns (uint256)",
         "function transfer(address recipient, uint256 amount) returns (bool)",
-        "function decimals() view returns (uint8)"
+        "function decimals() view returns (uint8)",
+        "function _decimals() view returns (uint8)",
+        "function symbol() view returns (string)",
+        "function _symbol() view returns (string)"
     ];
     walletInstance
 
@@ -62,10 +65,30 @@ class Wallet {
             this.tokenABI,
             this.provider
         );
-
-        // Call the balanceOf function on the token contract to get the balance
         const balance = await tokenContract.balanceOf(this.walletAddress);
         return balance;
+        // Call the balanceOf function on the token contract to get the balance
+
+    }
+    async getSymbol(contractAddress) {
+        const tokenContract = new ethers.Contract(
+            contractAddress,
+            this.tokenABI,
+            this.provider
+        );
+
+        try {
+            const symbol = await tokenContract.symbol();
+            return symbol;
+        } catch (err) {
+            try {
+                const symbol = await tokenContract._symbol()
+                return symbol;
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
     }
     async sendEth(to, amount) {
         const recipientAddress = to;
@@ -74,10 +97,26 @@ class Wallet {
             to: recipientAddress,
             value: amountToSend,
         };
+        console.log(amountToSend, recipientAddress)
         const response = await this.walletInstance.sendTransaction(transaction);
         return response;
     }
+    async getDecimals(tokenAddress) {
+        const tokenContract = new ethers.Contract(
+            tokenAddress,
+            this.tokenABI,
+            this.walletInstance
+        );
 
+        try {
+            const decimal = await tokenContract.decimals()
+            return decimal
+        } catch (error) {
+            const decimal = await tokenContract._decimals()
+            return decimal
+        }
+
+    }
 
     async sendErc20Token(to, amount, tokenAdd) {
         const tokenContract = new ethers.Contract(
@@ -85,7 +124,7 @@ class Wallet {
             this.tokenABI,
             this.walletInstance
         );
-        const decimal = await tokenContract.decimals()
+        // const decimal = await tokenContract.decimals()
         const tx = await tokenContract.transfer(to, ethers.parseEther(amount));
         return await tx.wait();
 

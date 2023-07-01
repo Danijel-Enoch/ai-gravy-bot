@@ -1,5 +1,5 @@
 const { ethers } = require('ethers');
-async function buyToken(BNB, to_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipient, gasPrice, Slippage, rpc, pK, ctx) {
+async function buyToken(BNB, to_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipient, gasPrice, Slippage, rpc, pK, ctx, scan) {
     const tokenIn = BNB;
     const tokenOut = to_PURCHASE;
     let provider = new ethers.JsonRpcProvider(rpc);
@@ -38,7 +38,7 @@ async function buyToken(BNB, to_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipien
             });
 
         const receipt = await tx.wait();
-        ctx.reply(`Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`)
+        ctx.reply(`Transaction receipt : ${scan}/tx/${receipt.logs[1].transactionHash}`)
         //  console.log(`Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`);
     } catch (err) {
 
@@ -76,7 +76,8 @@ async function approve(operator, approverPk, rpc, tokenAddress, ctx,) {
         ctx.reply(" Error while Appoving Router Contract")
     }
 }
-async function sellToken(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipient, gasPrice, Slippage, rpc, pK, ctx) {
+async function sellToken(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipient, gasPrice, Slippage, rpc, pK, ctx, scan) {
+    console.log(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipient, gasPrice, Slippage, rpc, pK, ctx, scan)
     const tokenIn = from_PURCHASE;
     const tokenOut = BNB;
     let provider = new ethers.JsonRpcProvider(rpc);
@@ -93,49 +94,52 @@ async function sellToken(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recip
         ],
         account
     );
-    try {
-        await approve(routerAddress, pK, rpc, from_PURCHASE, ctx)
-        const amountInMax = ethers.parseUnits(AMOUNT_OF_BNB.toString(), 18);
-        let amountOut = await router.getAmountsOut(amountInMax, [tokenIn, tokenOut]);
+    // await approve(routerAddress, pK, rpc, from_PURCHASE, ctx)
+    const amountInMax = ethers.parseUnits(AMOUNT_OF_BNB.toString(), 18);
+    console.log("here 1")
+    let amountOut = await router.getAmountsOut(amountInMax, [tokenIn, tokenOut]);
 
-        //We buy x amount of the new token for our bnb
-
-
-        const tx = await router.swapTokensForExactETH( //uncomment here if you want to buy token
-            amountOut[1],
-            amountInMax,
-            [tokenIn, tokenOut],
-            recipient,
-            Date.now() + 1000 * 60 * 5, //5 minutes
+    console.log("here 2")
+    const tx = await router.swapTokensForExactETH( //uncomment here if you want to buy token
+        amountOut[1],
+        amountInMax,
+        [tokenIn, tokenOut],
+        recipient,
+        Date.now() + 1000 * 60 * 5).then(res => {
+            console.log(res)
+            ctx.reply("Sell Successful ")
+            return res
+        }).catch(err => {
+            console.log(err)
+            let error = JSON.parse(JSON.stringify(err));
+            if (error.reason) {
+                console.log(`Error caused by : 
             {
-                //'gasLimit': 1671500610,
-                //'gasPrice': 1671500610,
-                // 'nonce': null, //set you want buy at where position in blocks
-                // 'value': amountIn
-            });
+            reason : ${error.reason},
+            transactionHash : ${error.transactionHash}
+            message : ${error}
+            }`);
+                ctx.reply(`Error caused by : 
+            {
+            reason : ${error.reason},
+            transactionHash : ${error.transactionHash}
+            message : ${error}
+            }`)
+            }
+            if (error.code) {
+                ctx.reply(`Error caused by : 
+            {
+            reason : ${error.code},
+            }`)
+            }
+            console.log(error);
+        });
 
-        const receipt = await tx.wait();
-        ctx.reply(`Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`)
-        //console.log(`Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`);
-    } catch (err) {
+    console.log("here 3")
 
-        // console.log(BNB, to_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipient, gasPrice, Slippage, rpc, pK,)
-        console.log(err)
-        let error = JSON.parse(JSON.stringify(err));
-        console.log(`Error caused by : 
-        {
-        reason : ${error.reason},
-        transactionHash : ${error.transactionHash}
-        message : ${error}
-        }`);
-        ctx.reply(`Error caused by : 
-        {
-        reason : ${error.reason},
-        transactionHash : ${error.transactionHash}
-        message : ${error}
-        }`)
-        console.log(error);
-    }
+    // ctx.reply(`Transaction receipt : ${scan}/tx/${receipt.logs[1].transactionHash}`)
+    // console.log(`Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`);
+    console.log("here 1")
 
 }
 

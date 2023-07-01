@@ -16,20 +16,22 @@ const ABI = [
     { "inputs": [{ "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "transfer", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }
 
 ]
-const ETH_RPC_URL = "http://127.0.0.1:8545"
+const ETH_RPC_URL = "https://eth.llamarpc.com"
 const ETH_TESTNET = {
     rpc: ETH_RPC_URL,
     router: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
-    weth: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+    weth: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    page: 'https://goerli.etherscan.io'
 }
 const BSC_TESTNET = {
-    rpc: "http://127.0.0.1:8545",
+    rpc: "https://bsc-dataseed.binance.org",
     router: "0x10ED43C718714eb63d5aA57B78B54704E256024E",
-    weth: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+    weth: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    page: 'https://bscscan.com'
 }
 
 
-const BSC_RPC_URL = "http://127.0.0.1:8545"
+const BSC_RPC_URL = "https://bsc.rpc.blxrbdn.com"
 
 module.exports = {
     PCS_ROUTER_ADDRESS,
