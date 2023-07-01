@@ -47,7 +47,7 @@ async function withdrawTokenConversation(conversation, ctx) {
     ctx.reply("Set Chain : (BSC/ETH)")
     const ChainCtx = await conversation.waitFor(":text")
     const privateKey = () => {
-        switch (walletCtx.msg.text) {
+        switch (walletCtx.msg.text.toLowerCase()) {
             case "w1":
                 return userData.pK1
             case "w2":
@@ -59,14 +59,34 @@ async function withdrawTokenConversation(conversation, ctx) {
         }
     }
     const pbkey = await getWalletAddress(userData.pK1)
-    const withdrawWallet = new Wallet(97, selectScan(ChainCtx.msg.txt).rpc, privateKey(), pbkey)
+    const withdrawWallet = new Wallet(97, selectScan(ChainCtx.msg.text.toUpperCase()).rpc, privateKey(), pbkey)
     withdrawWallet.sendErc20Token(reAddressCtx.msg.text, amountCtx.msg.text, tokenAddressCtx.msg.text)
         .then(res => {
             console.log(res)
             ctx.reply("Sucessfully Sent");
-            ctx.reply(`Transaction receipt : ${selectScan(ChainCtx.msg.txt).page}/tx/` + res.hash)
+            ctx.reply(`Transaction receipt : ${selectScan(ChainCtx.msg.text).page}/tx/` + res.hash)
         }).catch(err => {
             console.log(err)
+            let error = JSON.parse(JSON.stringify(err));
+            console.log(`Error caused by : 
+            {
+            reason : ${error.reason},
+            transactionHash : ${error.transactionHash}
+            message : ${error}
+            }`);
+            if(error.transactionHash){
+                ctx.reply(`Error caused by : 
+            {
+            reason : ${error.reason},
+            transactionHash : ${error.transactionHash}
+            message : ${error}
+            }`)
+            }
+            if(error.reason){
+                ctx.reply(`${error.reason}`)
+            }
+            
+            console.log(error);
         })
 
 
@@ -95,13 +115,13 @@ async function withDrawEthConversation(conversation, ctx) {
         }
     }
     const pbkey = await getWalletAddress(privateKey())
-    const withdrawWallet = new Wallet(97, selectScan(ChainCtx.msg.txt).rpc, privateKey(), pbkey)
+    const withdrawWallet = new Wallet(97, selectScan(ChainCtx.msg.text).rpc, privateKey(), pbkey)
     const withdrawWalletalance = await withdrawWallet.checkEthBalance()
     ctx.reply("Sending funds to " + reAddressCtx.msg.text)
     await withdrawWallet.sendEth(reAddressCtx.msg.text, amountCtx.msg.text.toString()).then(res => {
         ctx.reply("sucessfully sent")
         console.log({ res })
-        ctx.reply(`Transaction receipt : ${selectScan(ChainCtx.msg.txt.toUpperCase()).page}/tx/` + res.hash)
+        ctx.reply(`Transaction receipt : ${selectScan(ChainCtx.msg.text.toUpperCase()).page}/tx/` + res.hash)
     }).catch(err => {
         console.log({ err })
         ctx.reply(`Error Ocurred`)
