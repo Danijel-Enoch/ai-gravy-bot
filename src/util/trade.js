@@ -19,14 +19,15 @@ async function buyToken(BNB, to_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipien
 
         //We buy x amount of the new token for our bnb
         const amountIn = ethers.parseUnits(`${AMOUNT_OF_BNB}`, 'ether');
-        let amountOutMin = await router.getAmountsOut(amountIn, [tokenIn, tokenOut]);
-        // if (parseInt(Slippage) !== 0) {
-        //     
-        //     //Our execution price will be a bit different, we need some flexibility
-        //     amountOutMin = amounts[1] - (amounts[1] / (`${Slippage}`))
-        // }
+        let amountOutMin;
+        const amounts = await router.getAmountsOut(amountIn, [tokenIn, tokenOut]);
+        if (parseInt(Slippage) !== 0) {
+
+            //Our execution price will be a bit different, we need some flexibility
+            amountOutMin = BigInt(amounts[1]) - (BigInt(amounts[1]) / BigInt(Slippage))
+        }
         const tx = await router.swapExactETHForTokens( //uncomment here if you want to buy token
-            amountOutMin[1],
+            amountOutMin,
             [tokenIn, tokenOut],
             recipient,
             Date.now() + 1000 * 60 * 5, //5 minutes
@@ -38,12 +39,13 @@ async function buyToken(BNB, to_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipien
             });
 
         const receipt = await tx.wait();
+        // console.log(receipt)
         ctx.reply(`Transaction receipt : ${scan}/tx/${receipt.logs[1].transactionHash}`)
         //  console.log(`Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`);
     } catch (err) {
 
         // console.log(BNB, to_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipient, gasPrice, Slippage, rpc, pK,)
-        console.log(err)
+        // console.log(err)
         let error = JSON.parse(JSON.stringify(err));
         console.log(`Error caused by : 
         {
@@ -71,13 +73,15 @@ async function approve(operator, approverPk, rpc, tokenAddress, ctx,) {
         const contract = new ethers.Contract(tokenAddress, abi, account);
         const tx = await contract.approve(operator, "100000000000000000000000000000");
         const receipt = await tx.wait();
+        //console.log("approved gone")
         ctx.reply("Router Contract Approved")
     } catch (error) {
+        //console.log("approved no go")
         ctx.reply(" Error while Appoving Router Contract")
     }
 }
 async function sellToken(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipient, gasPrice, Slippage, rpc, pK, ctx, scan) {
-    console.log(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipient, gasPrice, Slippage, rpc, pK, ctx, scan)
+    //console.log(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipient, gasPrice, Slippage, rpc, pK, ctx, scan)
     const tokenIn = from_PURCHASE;
     const tokenOut = BNB;
     let provider = new ethers.JsonRpcProvider(rpc);
@@ -95,13 +99,20 @@ async function sellToken(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recip
         account
     );
     await approve(routerAddress, pK, rpc, from_PURCHASE, ctx)
+    await approve(routerAddress, pK, rpc, tokenOut, ctx)
     const amountInMax = ethers.parseUnits(AMOUNT_OF_BNB.toString(), 18);
-    console.log("here 1")
-    let amountOut = await router.getAmountsOut(amountInMax, [tokenIn, tokenOut]);
+    // console.log("here 1")
+    let amountOut;
+    const amounts = await router.getAmountsOut(amountInMax, [tokenIn, tokenOut]);
+    if (parseInt(Slippage) !== 0) {
+
+        //Our execution price will be a bit different, we need some flexibility
+        amountOut = BigInt(amounts[1]) - (BigInt(amounts[1]) / BigInt(Slippage))
+    }
 
     console.log("here 2")
     const tx = await router.swapTokensForExactETH( //uncomment here if you want to buy token
-        amountOut[1],
+        amountOut,
         amountInMax,
         [tokenIn, tokenOut],
         recipient,
@@ -120,11 +131,10 @@ async function sellToken(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recip
             message : ${error}
             }`);
                 ctx.reply(`Error caused by : 
-            {
-            reason : ${error.reason},
-            transactionHash : ${error.transactionHash}
-            message : ${error}
-            }`)
+                {
+                reason : ${error.reason},
+                message : ${error.message}
+                }`)
             }
             if (error.code) {
                 ctx.reply(`Error caused by : 

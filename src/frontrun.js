@@ -33,9 +33,10 @@ const scanForSwapTokenPendingTxs = async () => {
                     // console.log(transaction.hash, decoded);
                     if (decodedTx.name === "addLiquidity") {
                         // console.log({ args: decodedTx.args, function: decodedTx.name, value: decodedTx.value })
+                        console.log(transaction.hash, { args: decodedTx.args, function: decodedTx.name, value: decodedTx.value })
                     }
                     if (decodedTx.name === "swapExactETHForTokens") {
-                        console.log(transaction.hash, { args: decodedTx.args, function: decodedTx.name, value: decodedTx.value })
+                        // console.log(transaction.hash, { args: decodedTx.args, function: decodedTx.name, value: decodedTx.value })
                     }
                     if (decodedTx.name === "swapExactTokensForTokens") {
                         //zero is amout In
