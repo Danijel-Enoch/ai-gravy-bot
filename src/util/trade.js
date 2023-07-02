@@ -69,7 +69,7 @@ async function approve(operator, approverPk, rpc, tokenAddress, ctx,) {
         let provider = new ethers.JsonRpcProvider(rpc);
         const account = new ethers.Wallet(approverPk).connect(provider)
         const contract = new ethers.Contract(tokenAddress, abi, account);
-        const tx = await contract.approve(operator, "100000000000000000000000");
+        const tx = await contract.approve(operator, "100000000000000000000000000000");
         const receipt = await tx.wait();
         ctx.reply("Router Contract Approved")
     } catch (error) {
@@ -94,7 +94,7 @@ async function sellToken(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recip
         ],
         account
     );
-    // await approve(routerAddress, pK, rpc, from_PURCHASE, ctx)
+    await approve(routerAddress, pK, rpc, from_PURCHASE, ctx)
     const amountInMax = ethers.parseUnits(AMOUNT_OF_BNB.toString(), 18);
     console.log("here 1")
     let amountOut = await router.getAmountsOut(amountInMax, [tokenIn, tokenOut]);
@@ -145,6 +145,7 @@ async function sellToken(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recip
 
 
 module.exports = { buyToken, sellToken }
+
 
 
 
