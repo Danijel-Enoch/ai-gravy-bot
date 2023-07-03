@@ -16,7 +16,9 @@ const ABI = [
     { "inputs": [{ "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "transfer", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }
 
 ]
-const ETH_RPC_URL = "https://eth.llamarpc.com"
+
+const DEV_NET = "http://127.0.0.1:8545/"
+const ETH_RPC_URL = "https://eth-mainnet.nodereal.io/v1/07c15e247ea043459af03f3c0bc0c018"
 const ETH_TESTNET = {
     rpc: ETH_RPC_URL,
     router: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",

@@ -13,7 +13,7 @@ const { ethers } = require("ethers");
 const bot = new Bot('5661676335:AAF1z0yuo2mr7fPr_-J2G0SI7mSc8HvQTog');
 
 
-bot.use(session({ initial: () => ({ slippage: 0, chain: "", txWallet: "" }) }));
+bot.use(session({ initial: () => ({ slippage: 0, chain: "", txWallet: "", amount: 0 }) }));
 bot.use(conversations());
 
 
@@ -238,12 +238,21 @@ async function buyConversation(conversation, ctx) {
         .text("0.5 %", "0.5").text("1 %", "1").text("10 %", "10").row()
         .text("15 %", "15").text("30 %", "30").text("50 %", "50").row()
         .text("55 %", "55").text("60 %", "60").text("70 %", "70").row()
-        .text("80 %", "80").text("90 %", "90").text("100 %", "98").row();
+        .text("80 %", "80").text("90 %", "90").text("100 %", "98").row()
+        .text("Custom Amount", "custom");
     await ctx.reply("Kindly input Purchase Amount: (in BNB/ETH): ", { reply_markup: keyboardAmount });
-    const responseAmount = await conversation.waitForCallbackQuery(["0.5", "1", "1", "10", "15", "30", "50", "55", "60", "70", "80", "90", "100"], {
+    const responseAmount = await conversation.waitForCallbackQuery(["0.5", "1", "1", "10", "15", "30", "50", "55", "60", "70", "80", "90", "100", "custom"], {
         otherwise: (ctx) => ctx.reply("Use the buttons!", { reply_markup: keyboardAmount }),
     });
-    const amountCtx = responseAmount.match
+    let amountCtx = responseAmount.match
+    if (responseAmount.match == "custom") {
+        await ctx.reply("Kindly input custom amount:");
+        const x = await conversation.waitFor(":text")
+        amountCtx = x.msg.text
+        ctx.session.amount = x.msg.text
+    } else {
+        amountCtx = responseAmount.match && ctx.session.amount
+    }
     //slippage menu
 
     const keyboardSlippage = new InlineKeyboard()
@@ -424,7 +433,7 @@ bot.use(menu);
 
 
 bot.api.setMyCommands([
-    { command: "menu", description: "Shows all wallet and dapps Options" },
+    { command: "start", description: "Shows all wallet and dapps Options" },
     { command: "help", description: "Contact our Help Channel" },
     { command: "settings", description: "Change Wallet Settings and password" },
     { command: "balance", description: "Shows all wallet balance" },

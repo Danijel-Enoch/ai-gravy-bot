@@ -1,5 +1,6 @@
 const { ethers } = require('ethers');
 async function buyToken(BNB, to_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipient, gasPrice, Slippage, rpc, pK, ctx, scan) {
+    //   console.log(BNB, to_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipient, gasPrice, Slippage, rpc, pK, ctx, scan)
     const tokenIn = BNB;
     const tokenOut = to_PURCHASE;
     let provider = new ethers.JsonRpcProvider(rpc);
@@ -34,36 +35,43 @@ async function buyToken(BNB, to_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipien
             {
                 //'gasLimit': 1671500610,
                 //'gasPrice': 1671500610,
-                'nonce': null, //set you want buy at where position in blocks
+                //'nonce': null, //set you want buy at where position in blocks
                 'value': amountIn
             });
 
         const receipt = await tx.wait();
-         console.log(receipt)
+        console.log(receipt)
         ctx.reply(`Transaction receipt : ${scan}/tx/${receipt.logs[1].transactionHash}`)
         //  console.log(`Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`);
     } catch (err) {
 
         // console.log(BNB, to_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipient, gasPrice, Slippage, rpc, pK,)
-         console.log(err)
+        console.log({ err })
         let error = JSON.parse(JSON.stringify(err));
-        console.log(`Error caused by : 
-        {
-        reason : ${error.reason},
-        transactionHash : ${error.transactionHash}
-        message : ${error}
-        }`);
-        ctx.reply(`Error caused by : 
-        {
-        reason : ${error.reason},
-        transactionHash : ${error.transactionHash}
-        message : ${error}
-        }`)
-        console.log(error);
+        if (error.reason) {
+            console.log(`Error caused by : 
+            {
+            reason : ${error.reason},
+            transactionHash : ${error.transactionHash}
+            message : ${error}
+            }`);
+            ctx.reply(`Error caused by : 
+                {
+                reason : ${error.reason},
+                message : ${error.message}
+                }`)
+        }
+        if (error.code) {
+            ctx.reply(`Error caused by : 
+            {
+            reason : ${error.code},
+            }`)
+        }
+        console.log({ error });
     }
 
 }
-async function approve(operator, approverPk, rpc, tokenAddress, ctx,) {
+async function approve(operator, approverPk, rpc, tokenAddress, ctx, amount) {
     try {
         const abi = [
             "function approve(address spender, uint256 amount) returns (bool)"
@@ -71,12 +79,13 @@ async function approve(operator, approverPk, rpc, tokenAddress, ctx,) {
         let provider = new ethers.JsonRpcProvider(rpc);
         const account = new ethers.Wallet(approverPk).connect(provider)
         const contract = new ethers.Contract(tokenAddress, abi, account);
-        const tx = await contract.approve(operator, "100000000000000000000000000000");
+        const tx = await contract.approve(operator, amount);
+        // await contract.approve(operator, "1000000000000000000000000")
         const receipt = await tx.wait();
         //console.log("approved gone")
         ctx.reply("Router Contract Approved")
     } catch (error) {
-        //console.log("approved no go")
+        console.log(error)
         ctx.reply(" Error while Appoving Router Contract")
     }
 }
@@ -98,9 +107,10 @@ async function sellToken(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recip
         ],
         account
     );
-    await approve(routerAddress, pK, rpc, from_PURCHASE, ctx)
-    await approve(routerAddress, pK, rpc, tokenOut, ctx)
-    const amountInMax = ethers.parseUnits(AMOUNT_OF_BNB.toString(), 18);
+    const amountInMax = ethers.parseUnits(AMOUNT_OF_BNB.toString(), 18)
+    await approve(routerAddress, pK, rpc, from_PURCHASE, ctx, amountInMax)
+        //  await approve(routerAddress, pK, rpc, tokenOut, ctx)
+        ;
     // console.log("here 1")
     let amountOut;
     const amounts = await router.getAmountsOut(amountInMax, [tokenIn, tokenOut]);
@@ -117,9 +127,9 @@ async function sellToken(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recip
         [tokenIn, tokenOut],
         recipient,
         Date.now() + 1000 * 60 * 5).then(res => {
-            console.log(res)
+            //  console.log(res)
             ctx.reply("Sell Successful ")
-         ctx.reply(`Transaction receipt : ${scan}/tx/${receipt.logs[1].transactionHash}`)
+            ctx.reply(`Transaction receipt : ${scan}/tx/${res.transactionHash}`)
             return res
         }).catch(err => {
             console.log(err)
@@ -148,7 +158,7 @@ async function sellToken(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recip
 
     console.log("here 3")
 
-    
+
     // console.log(`Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`);
     console.log("here 1")
 
