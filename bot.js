@@ -98,6 +98,9 @@ async function withdrawTokenConversation(conversation, ctx) {
             if (error.reason) {
                 ctx.reply(`${error.reason}`)
             }
+            if (error.code) {
+                ctx.reply(`${error.code}`)
+            }
 
             console.log(error);
         })
@@ -477,9 +480,6 @@ function errorHandler(err) {
 const webCall = webhookCallback(bot, "http")
 
 bot.start();
-module.exports = {
-    webCall
-}
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
