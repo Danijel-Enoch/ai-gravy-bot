@@ -1,5 +1,5 @@
 const { Telegraf, Markup } = require("telegraf");
-const { Bot, Context, session, InlineKeyboard } = require("grammy");
+const { Bot, Context, session, InlineKeyboard, webhookCallback } = require("grammy");
 const { Menu } = require("@grammyjs/menu");
 const {
     conversations,
@@ -13,7 +13,7 @@ const { ethers } = require("ethers");
 const bot = new Bot('5661676335:AAF1z0yuo2mr7fPr_-J2G0SI7mSc8HvQTog');
 
 
-bot.use(session({ initial: () => ({ slippage: 0, chain: "", txWallet: "", amount: 0 }) }));
+bot.use(session({ initial: () => ({ slippage: 0, chain: "", txWallet: "" }) }));
 bot.use(conversations());
 
 
@@ -149,7 +149,7 @@ async function withDrawEthConversation(conversation, ctx) {
     const pbkey = await getWalletAddress(privateKey())
     const withdrawWallet = new Wallet(97, selectScan(ChainCtx).rpc, privateKey(), pbkey)
     const withdrawWalletalance = await withdrawWallet.checkEthBalance()
-    const amountToWithDraw = calculatePercentage(withdrawWalletalance, amountCtx)
+    const amountToWithDraw = calculatePercentage(withdrawWalletalance, amountCtx).toFixed(4)
     ctx.reply("Sending funds to " + reAddressCtx.msg.text)
     await withdrawWallet.sendEth(reAddressCtx.msg.text, amountToWithDraw.toString()).then(res => {
         ctx.reply("sucessfully sent")
@@ -157,7 +157,7 @@ async function withDrawEthConversation(conversation, ctx) {
         ctx.reply(`Transaction receipt : ${selectScan(ChainCtx.toUpperCase()).page}/tx/` + res.hash)
     }).catch(err => {
         console.log({ err })
-        ctx.reply(`Error Ocurred`)
+        ctx.reply(`Error Ocurred :`, err.code)
     })
     //get amount amout to withdraw
 
@@ -238,21 +238,12 @@ async function buyConversation(conversation, ctx) {
         .text("0.5 %", "0.5").text("1 %", "1").text("10 %", "10").row()
         .text("15 %", "15").text("30 %", "30").text("50 %", "50").row()
         .text("55 %", "55").text("60 %", "60").text("70 %", "70").row()
-        .text("80 %", "80").text("90 %", "90").text("100 %", "98").row()
-        .text("Custom Amount", "custom");
+        .text("80 %", "80").text("90 %", "90").text("100 %", "98").row();
     await ctx.reply("Kindly input Purchase Amount: (in BNB/ETH): ", { reply_markup: keyboardAmount });
-    const responseAmount = await conversation.waitForCallbackQuery(["0.5", "1", "1", "10", "15", "30", "50", "55", "60", "70", "80", "90", "100", "custom"], {
+    const responseAmount = await conversation.waitForCallbackQuery(["0.5", "1", "1", "10", "15", "30", "50", "55", "60", "70", "80", "90", "100"], {
         otherwise: (ctx) => ctx.reply("Use the buttons!", { reply_markup: keyboardAmount }),
     });
-    let amountCtx = responseAmount.match
-    if (responseAmount.match == "custom") {
-        await ctx.reply("Kindly input custom amount:");
-        const x = await conversation.waitFor(":text")
-        amountCtx = x.msg.text
-        ctx.session.amount = x.msg.text
-    } else {
-        amountCtx = responseAmount.match && ctx.session.amount
-    }
+    amountCtx = responseAmount.match
     //slippage menu
 
     const keyboardSlippage = new InlineKeyboard()
@@ -433,7 +424,7 @@ bot.use(menu);
 
 
 bot.api.setMyCommands([
-    { command: "start", description: "Shows all wallet and dapps Options" },
+    { command: "menu", description: "Shows all wallet and dapps Options" },
     { command: "help", description: "Contact our Help Channel" },
     { command: "settings", description: "Change Wallet Settings and password" },
     { command: "balance", description: "Shows all wallet balance" },
@@ -483,10 +474,12 @@ function errorHandler(err) {
 
 
 
-
+const webCall = webhookCallback(bot, "http")
 
 bot.start();
-
+module.exports = {
+    webCall
+}
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
