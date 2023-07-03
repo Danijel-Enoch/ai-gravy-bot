@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev-bot": "nodemon bot.js",
 		"dev-sniper": "nodemon src/frontrun.js",
-		"start": "node bt.js"
+		"start": "node bot.js"
 	},
 	"author": "",
 	"license": "ISC",
