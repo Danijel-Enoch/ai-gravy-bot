@@ -5,7 +5,8 @@
 	"main": "index.js",
 	"scripts": {
 		"dev-bot": "nodemon bot.js",
-		"dev-sniper": "nodemon src/frontrun.js"
+		"dev-sniper": "nodemon src/frontrun.js",
+		"start": "node bt.js"
 	},
 	"author": "",
 	"license": "ISC",
