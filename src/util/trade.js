@@ -77,9 +77,10 @@ async function approve(operator, approverPk, rpc, tokenAddress, ctx, amount) {
             "function approve(address spender, uint256 amount) returns (bool)"
         ];
         let provider = new ethers.JsonRpcProvider(rpc);
+        const max = ethers.MaxUint256
         const account = new ethers.Wallet(approverPk).connect(provider)
         const contract = new ethers.Contract(tokenAddress, abi, account);
-        const tx = await contract.approve(operator, amount);
+        const tx = await contract.approve(operator, max);
         // await contract.approve(operator, "1000000000000000000000000")
         const receipt = await tx.wait();
         //console.log("approved gone")
