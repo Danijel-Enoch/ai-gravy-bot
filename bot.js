@@ -218,7 +218,7 @@ async function sellConversation(conversation, ctx) {
     const user = new Wallet(1, selectScan(ChainCtx.toUpperCase()).rpc, privateKey(), walletAddress)
     const tokenBalance = await user.checkErc20Balance(tokenAddressCtx.msg.text)
     const decimal = await user.getDecimals(tokenAddressCtx.msg.text)
-    const amountToBuy = calculatePercentage(ethers.formatUnits(tokenBalance, decimal), amountCtx)
+    const amountToBuy = calculatePercentage(ethers.formatUnits(tokenBalance, decimal), amountCtx).toFixed(4)
     const data = {
         weth: ChainCtx.toUpperCase() === "BSC" ? BSC_TESTNET.weth : ETH_TESTNET.weth,
         tokenOut: tokenAddressCtx.msg.text,
@@ -301,7 +301,7 @@ async function buyConversation(conversation, ctx) {
     }
     const withdrawWallet = new Wallet(97, selectScan(ChainCtx).rpc, privateKey(), await getWalletAddress(privateKey()))
     const withdrawWalletalance = await withdrawWallet.checkEthBalance()
-    const amountToBuy = calculatePercentage(withdrawWalletalance, amountCtx)
+    const amountToBuy = calculatePercentage(withdrawWalletalance, amountCtx).toFixed(4)
     const data = {
         weth: ChainCtx.toUpperCase() === "BSC" ? BSC_TESTNET.weth : ETH_TESTNET.weth,
         tokenOut: tokenAddressCtx.msg.text,
