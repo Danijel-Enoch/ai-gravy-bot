@@ -1,8 +1,9 @@
 const { createClient } = require('@supabase/supabase-js')
 const { GenerateWallet } = require("./blockchain")
 const axios = require("axios")
-const supabaseUrl = 'https://dxxhlgvftegkivncnblj.supabase.co'
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4eGhsZ3ZmdGVna2l2bmNuYmxqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4Nzk1MjIwNiwiZXhwIjoyMDAzNTI4MjA2fQ.odHwIH0u5WV_sLTV_0DRkK8eKLvt7LftT8R-_LeDxck"
+const supabaseUrl = 'https://auswwgwgwrvdcalpueit.supabase.co'
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1c3d3Z3dnd3J2ZGNhbHB1ZWl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODg1ODExNDksImV4cCI6MjAwNDE1NzE0OX0.hUN5bxHBK4aJXGBTI5lWFb-oIAWoCnBfcXbljb5vM8Y"
+
 
 const supabase = createClient(supabaseUrl, supabaseKey)
 async function authUser(userId, ctx) {
@@ -17,29 +18,36 @@ async function authUser(userId, ctx) {
             const pK2 = GenerateWallet()
             const pK3 = GenerateWallet()
             console.log(pK1)
-            //  ctx.reply("Registering......")
-            const response = await axios.post(
-                'https://dxxhlgvftegkivncnblj.supabase.co/rest/v1/botUsers',
-                // '{ "some_column": "someValue", "other_column": "otherValue" }',
-                {
-                    pK1, pK2, pK3, "userID": userId
-                },
-                {
-                    headers: {
-                        'apikey': supabaseKey,
-                        'Authorization': 'Bearer ' + supabaseKey,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
+            // ctx.reply("Registering......")
+            try {
+                const response = await axios.post(
+                    'https://auswwgwgwrvdcalpueit.supabase.co/rest/v1/botUsers',
+                    // '{ "some_column": "someValue", "other_column": "otherValue" }',
+                    {
+                        pK1, pK2, pK3, "userID": userId
+                    },
+                    {
+                        headers: {
+                            'apikey': supabaseKey,
+                            'Authorization': 'Bearer ' + supabaseKey,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=minimal'
+                        }
                     }
-                }
-            );
+                );
+
+            } catch (error) {
+                console.log(error)
+
+            }
+
             let { data: botUsers, error } = await supabase
                 .from('botUsers')
                 .select("*").eq('userID', userId)
             return botUsers[0]
-            // console.log({ data, error })
+            console.log({ data, error })
         } if (botUsers.length > 0) {
-            //   ctx.reply("Logging In ....")
+            //  ctx.reply("Logging In ....")
             let { data: botUsers, error } = await supabase
                 .from('botUsers')
                 .select("*").eq('userID', userId)
@@ -57,7 +65,7 @@ async function authUser(userId, ctx) {
 async function addToken(tokenAddress, walletAddress, chain, ctx, userID) {
     try {
         const res = await axios.post(
-            'https://dxxhlgvftegkivncnblj.supabase.co/rest/v1/botUserTokens',
+            'https://auswwgwgwrvdcalpueit.supabase.co/rest/v1/botUserTokens',
             // '{ "some_column": "someValue", "other_column": "otherValue" }',
             {
                 userID, tokenAddress, walletAddress, chain
