@@ -10,7 +10,7 @@ const { authUser, addToken, getUserTokenAndBalances } = require("./src/util/api"
 const { Wallet, getGasPrice, getWalletAddress } = require("./src/util/blockchain")
 const { BSC_RPC_URL, ETH_RPC_URL, BSC_TESTNET, ETH_TESTNET } = require("./src/config");
 const { ethers, isAddress } = require("ethers");
-const bot = new Bot('5661676335:AAF1z0yuo2mr7fPr_-J2G0SI7mSc8HvQTog');
+const bot = new Bot('6393848371:AAHGN4K8m1TnJ8UDX4SLUOJormWEpNwB6Jg');
 
 
 bot.use(session({ initial: () => ({ slippage: 0, chain: "", txWallet: "" }) }));
