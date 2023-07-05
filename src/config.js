@@ -17,16 +17,16 @@ const ABI = [
 
 ]
 
-const DEV_NET = "http://127.0.0.1:8545/"
+const DEV_NET = "http://127.0.0.1:7545/"
 const ETH_RPC_URL = "https://eth-mainnet.nodereal.io/v1/07c15e247ea043459af03f3c0bc0c018"
 const ETH_TESTNET = {
-    rpc: ETH_RPC_URL,
+    rpc: DEV_NET,// ETH_RPC_URL,
     router: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
     weth: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     page: 'https://etherscan.io'
 }
 const BSC_TESTNET = {
-    rpc: "https://bsc-dataseed.binance.org",
+    rpc: DEV_NET,// "https://bsc-dataseed.binance.org",
     router: "0x10ED43C718714eb63d5aA57B78B54704E256024E",
     weth: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
     page: 'https://bscscan.com'

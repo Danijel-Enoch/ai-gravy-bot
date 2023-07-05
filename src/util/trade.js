@@ -44,7 +44,6 @@ async function buyToken(BNB, to_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipien
         ctx.reply(`Transaction receipt : ${scan}/tx/${receipt.logs[1].transactionHash}`)
         //  console.log(`Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`);
     } catch (err) {
-
         // console.log(BNB, to_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipient, gasPrice, Slippage, rpc, pK,)
         console.log({ err })
         let error = JSON.parse(JSON.stringify(err));
@@ -91,7 +90,7 @@ async function approve(operator, approverPk, rpc, tokenAddress, ctx, amount) {
     }
 }
 async function sellToken(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipient, gasPrice, Slippage, rpc, pK, ctx, scan) {
-    //console.log(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipient, gasPrice, Slippage, rpc, pK, ctx, scan)
+    console.log(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recipient, gasPrice, Slippage, rpc, pK, ctx, scan)
     const tokenIn = from_PURCHASE;
     const tokenOut = BNB;
     let provider = new ethers.JsonRpcProvider(rpc);
@@ -120,8 +119,6 @@ async function sellToken(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recip
         //Our execution price will be a bit different, we need some flexibility
         amountOut = BigInt(amounts[1]) - (BigInt(amounts[1]) / BigInt(Slippage))
     }
-
-    console.log("here 2")
     const tx = await router.swapTokensForExactETH( //uncomment here if you want to buy token
         amountOut,
         amountInMax,
@@ -130,10 +127,10 @@ async function sellToken(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recip
         Date.now() + 1000 * 60 * 5).then(res => {
             //  console.log(res)
             ctx.reply("Sell Successful ")
-            ctx.reply(`Transaction receipt : ${scan}/tx/${res.transactionHash}`)
+            ctx.reply(`Transaction receipt : ${scan}/tx/${res.logs[1].transactionHash}`)
             return res
         }).catch(err => {
-            console.log(err)
+            console.log({ err })
             let error = JSON.parse(JSON.stringify(err));
             if (error.reason) {
                 console.log(`Error caused by : 
@@ -151,17 +148,12 @@ async function sellToken(BNB, from_PURCHASE, AMOUNT_OF_BNB, routerAddress, recip
             if (error.code) {
                 ctx.reply(`Error caused by : 
             {
-            reason : ${error.code},
+            code : ${error.code},
+            message : ${error.info.error.message},
             }`)
             }
-            console.log(error);
+            console.log({ error });
         });
-
-    console.log("here 3")
-
-
-    // console.log(`Transaction receipt : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`);
-    console.log("here 1")
 
 }
 

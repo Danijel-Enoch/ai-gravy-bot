@@ -9,7 +9,7 @@ const { buyToken, sellToken } = require("./src/util/trade")
 const { authUser, addToken, getUserTokenAndBalances } = require("./src/util/api")
 const { Wallet, getGasPrice, getWalletAddress } = require("./src/util/blockchain")
 const { BSC_RPC_URL, ETH_RPC_URL, BSC_TESTNET, ETH_TESTNET } = require("./src/config");
-const { ethers } = require("ethers");
+const { ethers, isAddress } = require("ethers");
 const bot = new Bot('5661676335:AAF1z0yuo2mr7fPr_-J2G0SI7mSc8HvQTog');
 
 
@@ -40,7 +40,11 @@ async function withdrawTokenConversation(conversation, ctx) {
     await ctx.reply("Kindly input Recieving Wallet Address");
     const reAddressCtx = await conversation.waitFor(":text")
     ctx.reply("Kindly paste the contract address of the token to send out")
-    const tokenAddressCtx = await conversation.waitFor(":text")
+    let tokenAddressCtx = await conversation.waitFor(":text")
+    if (!isAddress(tokenAddressCtx.msg.text)) {
+        await ctx.reply("Not an Ethereum Address \n Kindly input Token Contract Address:");
+        tokenAddressCtx = await conversation.waitFor(":text")
+    }
     ///check there token balance
     await ctx.reply("Kindly input Amount to send :");
     const amountCtx = await conversation.waitFor(":text")
@@ -79,30 +83,10 @@ async function withdrawTokenConversation(conversation, ctx) {
             ctx.reply("Sucessfully Sent");
             ctx.reply(`Transaction receipt : ${selectScan(ChainCtx).page}/tx/` + res.hash)
         }).catch(err => {
-            console.log(err)
+            console.log(err.info.error.message)
             let error = JSON.parse(JSON.stringify(err));
-            console.log(`Error caused by : 
-            {
-            reason : ${error.reason},
-            transactionHash : ${error.transactionHash}
-            message : ${error}
-            }`);
-            if (error.transactionHash) {
-                ctx.reply(`Error caused by : 
-            {
-            reason : ${error.reason},
-            transactionHash : ${error.transactionHash}
-            message : ${error}
-            }`)
-            }
-            if (error.reason) {
-                ctx.reply(`${error.reason}`)
-            }
-            if (error.code) {
-                ctx.reply(`${error.code}`)
-            }
-
-            console.log(error);
+            console.log({ error })
+            ctx.reply(`Error Ocurred : \n ${err.info.error.message} \n ${error.code}`,)
         })
 
 
@@ -111,14 +95,18 @@ async function withDrawEthConversation(conversation, ctx) {
     const userId = ctx.from.id.toString();
     const userData = await authUser(userId, ctx);
     await ctx.reply("Kindly input Recieving Wallet Address");
-    const reAddressCtx = await conversation.waitFor(":text")
+    let reAddressCtx = await conversation.waitFor(":text")
+    if (!isAddress(reAddressCtx.msg.text)) {
+        await ctx.reply("Not an Ethereum Address \n Kindly input Receiving Wallet Address:");
+        reAddressCtx = await conversation.waitFor(":text")
+    }
     const keyboardAmount = new InlineKeyboard()
         .text("0.5 %", "0.5").text("1 %", "1").text("10 %", "10").row()
         .text("15 %", "15").text("30 %", "30").text("50 %", "50").row()
         .text("55 %", "55").text("60 %", "60").text("70 %", "70").row()
         .text("80 %", "80").text("90 %", "90").text("100 %", "98").row();
     await ctx.reply("Kindly input Amount to send: ", { reply_markup: keyboardAmount });
-    const responseAmount = await conversation.waitForCallbackQuery(["0.5", "1", "1", "10", "15", "30", "50", "55", "60", "70", "80", "90", "100"], {
+    const responseAmount = await conversation.waitForCallbackQuery(["0.5", "1", "1", "10", "15", "30", "50", "55", "60", "70", "80", "90", "98"], {
         otherwise: (ctx) => ctx.reply("Use the buttons!", { reply_markup: keyboardAmount }),
     });
     const amountCtx = responseAmount.match
@@ -153,14 +141,17 @@ async function withDrawEthConversation(conversation, ctx) {
     const withdrawWallet = new Wallet(97, selectScan(ChainCtx).rpc, privateKey(), pbkey)
     const withdrawWalletalance = await withdrawWallet.checkEthBalance()
     const amountToWithDraw = calculatePercentage(withdrawWalletalance, amountCtx).toFixed(4)
+    //  console.log({ amountToWithDraw })
     ctx.reply("Sending funds to " + reAddressCtx.msg.text)
     await withdrawWallet.sendEth(reAddressCtx.msg.text, amountToWithDraw.toString()).then(res => {
         ctx.reply("sucessfully sent")
         console.log({ res })
         ctx.reply(`Transaction receipt : ${selectScan(ChainCtx.toUpperCase()).page}/tx/` + res.hash)
     }).catch(err => {
-        console.log({ err })
-        ctx.reply(`Error Ocurred :`, err.code)
+        console.log(err.info.error.message)
+        let error = JSON.parse(JSON.stringify(err));
+        console.log({ error })
+        ctx.reply(`Error Ocurred : \n ${err.info.error.message} \n ${error.code}`,)
     })
     //get amount amout to withdraw
 
@@ -172,9 +163,21 @@ async function sellConversation(conversation, ctx) {
     const userId = ctx.from.id.toString();
     const userData = await authUser(userId, ctx);
     await ctx.reply("Kindly input Sale Contract Address");
-    const tokenAddressCtx = await conversation.waitFor(":text")
-    await ctx.reply("Kindly input Sale Amount: (in ERC20/BEP20)");
-    const amountCtx = await conversation.waitFor(":text")
+    let tokenAddressCtx = await conversation.waitFor(":text")
+    if (!isAddress(tokenAddressCtx.msg.text)) {
+        await ctx.reply("Not an Ethereum Address \n Kindly input Token Contract Address:");
+        tokenAddressCtx = await conversation.waitFor(":text")
+    }
+    const keyboardAmount = new InlineKeyboard()
+        .text("0.5 %", "0.5").text("1 %", "1").text("10 %", "10").row()
+        .text("15 %", "15").text("30 %", "30").text("50 %", "50").row()
+        .text("55 %", "55").text("60 %", "60").text("70 %", "70").row()
+        .text("80 %", "80").text("90 %", "90").text("100 %", "98").row();
+    await ctx.reply("Kindly input Sell Amount: (in BEP20/ERC20): ", { reply_markup: keyboardAmount });
+    const responseAmount = await conversation.waitForCallbackQuery(["0.5", "1", "1", "10", "15", "30", "50", "55", "60", "70", "80", "90", "100"], {
+        otherwise: (ctx) => ctx.reply("Use the buttons!", { reply_markup: keyboardAmount }),
+    });
+    amountCtx = responseAmount.match
     const keyboardSlippage = new InlineKeyboard()
         .text("1%", "1").text("2%", "2").text("3%", "3").text("5%", "5").row()
         .text("10%", "10").text("20%", "20").text("30%", "30");
@@ -211,11 +214,16 @@ async function sellConversation(conversation, ctx) {
                 break;
         }
     }
+    const walletAddress = await getWalletAddress(privateKey())
+    const user = new Wallet(1, selectScan(ChainCtx.toUpperCase()).rpc, privateKey(), walletAddress)
+    const tokenBalance = await user.checkErc20Balance(tokenAddressCtx.msg.text)
+    const decimal = await user.getDecimals(tokenAddressCtx.msg.text)
+    const amountToBuy = calculatePercentage(ethers.formatUnits(tokenBalance, decimal), amountCtx)
     const data = {
         weth: ChainCtx.toUpperCase() === "BSC" ? BSC_TESTNET.weth : ETH_TESTNET.weth,
         tokenOut: tokenAddressCtx.msg.text,
-        amount: amountCtx.msg.text,
-        recipient: await getWalletAddress(privateKey()),
+        amount: amountToBuy,
+        recipient: walletAddress,
         router: ChainCtx.toUpperCase() === "BSC" ? BSC_TESTNET.router : ETH_TESTNET.router,
         slippage: slippageCtx,
         rpc: ChainCtx.toUpperCase() === "BSC" ? BSC_TESTNET.rpc : ETH_TESTNET.rpc
@@ -236,7 +244,11 @@ async function buyConversation(conversation, ctx) {
     const userData = await authUser(userId, ctx)
     //token
     await ctx.reply("Kindly input Purchase Contract Address");
-    const tokenAddressCtx = await conversation.waitFor(":text")
+    let tokenAddressCtx = await conversation.waitFor(":text")
+    if (!isAddress(tokenAddressCtx.msg.text)) {
+        await ctx.reply("Not an Ethereum Address \n Kindly input Token Contract Address:");
+        tokenAddressCtx = await conversation.waitFor(":text")
+    }
     const keyboardAmount = new InlineKeyboard()
         .text("0.5 %", "0.5").text("1 %", "1").text("10 %", "10").row()
         .text("15 %", "15").text("30 %", "30").text("50 %", "50").row()
@@ -308,7 +320,11 @@ async function addTokenConversation(conversation, ctx) {
     const userId = ctx.from.id.toString();
     const userData = await authUser(userId, ctx)
     await ctx.reply("Kindly input Token Contract Address");
-    const tokenAddressCtx = await conversation.waitFor(":text")
+    let tokenAddressCtx = await conversation.waitFor(":text")
+    if (!isAddress(tokenAddressCtx.msg.text)) {
+        await ctx.reply("Not an Ethereum Address \n Kindly input Token Contract Address:");
+        tokenAddressCtx = await conversation.waitFor(":text")
+    }
     const keyboard = new InlineKeyboard()
         .text("Wallet 1", "w1").text("Wallet 2", "w2").text("Wallet 3", "w3");
     await ctx.reply("Set Wallet: (w1/w2/w3)", { reply_markup: keyboard });
@@ -380,6 +396,7 @@ async function showTokenBalance(conversation, ctx) {
     if (botUserTokens.length > 0) {
         const TokenBalances = botUserTokens.map(async token => {
             const { tokenAddress } = token
+            //console.log(tokenAddress)
             const balance = await user.checkErc20Balance(tokenAddress)
             const symbol = await user.getSymbol(tokenAddress)
             const decimal = await user.getDecimals(tokenAddress)
@@ -410,8 +427,8 @@ async function testSell(conversation, ctx) {
 const menu = new Menu("my-menu-identifier")
     .text("Buy", async (ctx) => await ctx.conversation.enter("buyConversation"))
     .text("Sell", async (ctx) => await ctx.conversation.enter("sellConversation")).row()
-    .text("withdraw ETH/BNB", async (ctx) => await ctx.conversation.enter("withDrawEthConversation")).row()
-    .text("Withdraw ERC20 tokens", async (ctx) => await ctx.conversation.enter("withdrawTokenConversation")).row()
+    .text("Withdraw ETH/BNB   ", async (ctx) => await ctx.conversation.enter("withDrawEthConversation")).row()
+    .text("Withdraw ERC20/BEP20 Tokens", async (ctx) => await ctx.conversation.enter("withdrawTokenConversation")).row()
     .text("Token Balances", async (ctx) => await ctx.conversation.enter("showTokenBalance")).row()
     .text("Add Token Contract", async (ctx) => await ctx.conversation.enter("addTokenConversation")).row()
 // .text("Test Sell", async (ctx) => await ctx.conversation.enter("testSell")).row()
@@ -427,7 +444,7 @@ bot.use(menu);
 
 
 bot.api.setMyCommands([
-    { command: "menu", description: "Shows all wallet and dapps Options" },
+    { command: "start", description: "Shows all wallet and dapps Options" },
     { command: "help", description: "Contact our Help Channel" },
     { command: "settings", description: "Change Wallet Settings and password" },
     { command: "balance", description: "Shows all wallet balance" },
@@ -451,7 +468,7 @@ bot.command("start", async (ctx) => {
         console.log(bscWalletsBalances)
         //get bsc and eth Balance
 
-        const msg = `🤑🤑Welcome to the Omini🤖 Snipe bot!🤑🤑\n⬩ BSC Gas🛅: ${bscGasPrice} GWEI \n ⬩ ETH Gas🛅: ${ethGasPrice} GWEI \nSnipe & swap at elite speeds for free.\n \n═══ Your Wallets ═══ \n ===BSC Balance=== \n Wallet 1 \n ${PublicKey[0]} \n Balance:${bscWalletsBalances[0]} \n Wallet 2 \n ${PublicKey[1]} \n Balance:${bscWalletsBalances[1]} \n Wallet 3 \n ${PublicKey[2]} \n Balance:${bscWalletsBalances[2]} \n \n =====ETH Balance==== \n Wallet 1 \n ${PublicKey[0]} \n Balance:${ethWalletsBalances[0]} \n Wallet 2 \n ${PublicKey[1]} \n Balance:${ethWalletsBalances[1]} \n Wallet 3 \n ${PublicKey[2]} \n Balance:${ethWalletsBalances[2]} `
+        const msg = `🤖Welcome to The Bot Omni🤖\n⬩ BSC Gas ⛽️:  ${bscGasPrice} GWEI \n ⬩  ETH Gas ⛽️ :  ${ethGasPrice} GWEI \nSnipe & Swap with elite speed across multiple chains\n \n═══ Your Wallets ═══ \n ===BSC Balance=== \n Wallet 1 \n ${PublicKey[0]} \n Balance:${bscWalletsBalances[0]} \n Wallet 2 \n ${PublicKey[1]} \n Balance:${bscWalletsBalances[1]} \n Wallet 3 \n ${PublicKey[2]} \n Balance:${bscWalletsBalances[2]} \n \n =====ETH Balance==== \n Wallet 1 \n ${PublicKey[0]} \n Balance:${ethWalletsBalances[0]} \n Wallet 2 \n ${PublicKey[1]} \n Balance:${ethWalletsBalances[1]} \n Wallet 3 \n ${PublicKey[2]} \n Balance:${ethWalletsBalances[2]} `
 
         ctx.reply(msg, { reply_markup: menu })
 
@@ -460,7 +477,17 @@ bot.command("start", async (ctx) => {
 })
 bot.command("help", ctx => ctx.reply("Help Desk\n Coming Soon"))
 bot.command("menu", ctx => ctx.reply(" See dashboard\n Coming Soon"))
-bot.command("settings", ctx => ctx.reply("Set password\n Coming Soon"))
+bot.command("settings", async (ctx) => {
+    // const history = ctx.chat.id
+    // console.log(history)
+    // let msg = ctx.msg.message_id
+    // let chats = await bot.api.deleteMessage(history, msg)
+    ctx.reply("Set password\n Coming Soon")
+    // msg = ctx.msg.message_id
+    // chats = await bot.api.deleteMessage(history, msg)
+    // console.log(msg)
+
+})
 
 bot.catch(errorHandler);
 
