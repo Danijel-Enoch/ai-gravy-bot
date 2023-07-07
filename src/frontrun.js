@@ -27,16 +27,16 @@ const scanForSwapTokenPendingTxs = async () => {
             if (transaction && transaction.to === "0x10ED43C718714eb63d5aA57B78B54704E256024E") {
                 const dataSlice = ethers.dataSlice(transaction.data, 4)
                 if (transaction.data.length === 522) {
-
+                    // console.log(1)
                     const decodedTx = uniswapRouterContract.interface.parseTransaction(transaction)
                     const decoded = new ethers.AbiCoder().decode(["address", "address", "uint24", "address", "uint256", "uint256", "uint256", "uint160"], dataSlice)
                     // console.log(transaction.hash, decoded);
                     if (decodedTx.name === "addLiquidity") {
-                        // console.log({ args: decodedTx.args, function: decodedTx.name, value: decodedTx.value })
-                        console.log(transaction.hash, { args: decodedTx.args, function: decodedTx.name, value: decodedTx.value })
+                        console.log({ args: decodedTx.args, function: decodedTx.name, value: decodedTx.value })
+                        //  console.log(transaction.hash, { args: decodedTx.args, function: decodedTx.name, value: decodedTx.value })
                     }
                     if (decodedTx.name === "swapExactETHForTokens") {
-                        // console.log(transaction.hash, { args: decodedTx.args, function: decodedTx.name, value: decodedTx.value })
+                        console.log(transaction.hash, { args: decodedTx.args, function: decodedTx.name, value: decodedTx.value })
                     }
                     if (decodedTx.name === "swapExactTokensForTokens") {
                         //zero is amout In
@@ -69,7 +69,7 @@ const scanForSwapTokenPendingTxs = async () => {
     // }
 };
 
-scanForSwapTokenPendingTxs();
+scanForSwapTokenPendingTxs().catch(console.log)
 
 //scan pancakeswap for swap
 // look for buys or sells

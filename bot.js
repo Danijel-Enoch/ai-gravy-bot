@@ -478,15 +478,13 @@ bot.command("start", async (ctx) => {
 bot.command("help", ctx => ctx.reply("Help Desk\n Coming Soon"))
 bot.command("menu", ctx => ctx.reply(" See dashboard\n Coming Soon"))
 bot.command("settings", async (ctx) => {
-    // const history = ctx.chat.id
-    // console.log(history)
-    // let msg = ctx.msg.message_id
-    // let chats = await bot.api.deleteMessage(history, msg)
-    ctx.reply("Set password\n Coming Soon")
-    // msg = ctx.msg.message_id
-    // chats = await bot.api.deleteMessage(history, msg)
-    // console.log(msg)
-
+    const userId = ctx.from.id.toString();
+    const userData = await authUser(userId, ctx)
+    if (userData) {
+        const PublicKey = [await getWalletAddress(userData.pK1), await getWalletAddress(userData.pK2), await getWalletAddress(userData.pK3)]
+        const msg = `🤖 Setting🤖\n⬩ ======= Wallets ======== \n Wallet 1 \n ${PublicKey[0]} \n Private Key \n:${userData.pK1} \n Wallet 2 \n ${PublicKey[1]} \n Private Key \n:${userData.pK2} \n Wallet 3 \n ${PublicKey[2]} \n Private Key \n:${userData.pK3} \n \n \n Kindly make sure to pls keep private key safe`
+        ctx.reply(msg)
+    }
 })
 
 bot.catch(errorHandler);
