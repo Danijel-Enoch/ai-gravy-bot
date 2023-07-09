@@ -37,6 +37,13 @@ bot.use(slippageMenu)
 async function withdrawTokenConversation(conversation, ctx) {
     const userId = ctx.from.id.toString();
     const userData = await authUser(userId, ctx);
+    const keyboardChain = new InlineKeyboard()
+        .text("BSC", "BSC").text("ETH", "ETH");
+    await ctx.reply("Select Chain : (BSC/ETH)", { reply_markup: keyboardChain });
+    const responseChain = await conversation.waitForCallbackQuery(["BSC", "ETH"], {
+        otherwise: (ctx) => ctx.reply("Use the buttons!", { reply_markup: keyboardChain }),
+    });
+    const ChainCtx = responseChain.match
     await ctx.reply("Kindly input Recieving Wallet Address");
     const reAddressCtx = await conversation.waitFor(":text")
     ctx.reply("Kindly paste the contract address of the token to send out")
@@ -56,13 +63,7 @@ async function withdrawTokenConversation(conversation, ctx) {
     });
     const walletCtx = response.match
     //get chain
-    const keyboardChain = new InlineKeyboard()
-        .text("BSC", "BSC").text("ETH", "ETH");
-    await ctx.reply("Select Chain : (BSC/ETH)", { reply_markup: keyboardChain });
-    const responseChain = await conversation.waitForCallbackQuery(["BSC", "ETH"], {
-        otherwise: (ctx) => ctx.reply("Use the buttons!", { reply_markup: keyboardChain }),
-    });
-    const ChainCtx = responseChain.match
+
     const privateKey = () => {
         switch (walletCtx.toLowerCase()) {
             case "w1":
@@ -94,6 +95,13 @@ async function withdrawTokenConversation(conversation, ctx) {
 async function withDrawEthConversation(conversation, ctx) {
     const userId = ctx.from.id.toString();
     const userData = await authUser(userId, ctx);
+    const keyboardChain = new InlineKeyboard()
+        .text("BSC", "BSC").text("ETH", "ETH");
+    await ctx.reply("Select Chain : (BSC/ETH)", { reply_markup: keyboardChain });
+    const responseChain = await conversation.waitForCallbackQuery(["BSC", "ETH"], {
+        otherwise: (ctx) => ctx.reply("Use the buttons!", { reply_markup: keyboardChain }),
+    });
+    const ChainCtx = responseChain.match
     await ctx.reply("Kindly input Recieving Wallet Address");
     let reAddressCtx = await conversation.waitFor(":text")
     if (!isAddress(reAddressCtx.msg.text)) {
@@ -118,13 +126,7 @@ async function withDrawEthConversation(conversation, ctx) {
     });
     const walletCtx = response.match
     //get chain
-    const keyboardChain = new InlineKeyboard()
-        .text("BSC", "BSC").text("ETH", "ETH");
-    await ctx.reply("Select Chain : (BSC/ETH)", { reply_markup: keyboardChain });
-    const responseChain = await conversation.waitForCallbackQuery(["BSC", "ETH"], {
-        otherwise: (ctx) => ctx.reply("Use the buttons!", { reply_markup: keyboardChain }),
-    });
-    const ChainCtx = responseChain.match
+
     const privateKey = () => {
         switch (walletCtx.toLowerCase()) {
             case "w1":
@@ -162,6 +164,13 @@ async function withDrawEthConversation(conversation, ctx) {
 async function sellConversation(conversation, ctx) {
     const userId = ctx.from.id.toString();
     const userData = await authUser(userId, ctx);
+    const keyboardChain = new InlineKeyboard()
+        .text("BSC", "BSC").text("ETH", "ETH");
+    await ctx.reply("Select Chain : (BSC/ETH)", { reply_markup: keyboardChain });
+    const responseChain = await conversation.waitForCallbackQuery(["BSC", "ETH"], {
+        otherwise: (ctx) => ctx.reply("Use the buttons!", { reply_markup: keyboardChain }),
+    });
+    const ChainCtx = responseChain.match
     await ctx.reply("Kindly input Sale Contract Address");
     let tokenAddressCtx = await conversation.waitFor(":text")
     if (!isAddress(tokenAddressCtx.msg.text)) {
@@ -194,13 +203,7 @@ async function sellConversation(conversation, ctx) {
     });
     const walletCtx = response.match
     //get chain
-    const keyboardChain = new InlineKeyboard()
-        .text("BSC", "BSC").text("ETH", "ETH");
-    await ctx.reply("Select Chain : (BSC/ETH)", { reply_markup: keyboardChain });
-    const responseChain = await conversation.waitForCallbackQuery(["BSC", "ETH"], {
-        otherwise: (ctx) => ctx.reply("Use the buttons!", { reply_markup: keyboardChain }),
-    });
-    const ChainCtx = responseChain.match
+
     const bscGasPrice = await getGasPrice(BSC_TESTNET.rpc)
     const privateKey = () => {
         switch (walletCtx.toLowerCase()) {
@@ -319,6 +322,13 @@ async function buyConversation(conversation, ctx) {
 async function addTokenConversation(conversation, ctx) {
     const userId = ctx.from.id.toString();
     const userData = await authUser(userId, ctx)
+    const keyboardChain = new InlineKeyboard()
+        .text("BSC", "BSC").text("ETH", "ETH");
+    await ctx.reply("Select Chain : (BSC/ETH)", { reply_markup: keyboardChain });
+    const responseChain = await conversation.waitForCallbackQuery(["BSC", "ETH"], {
+        otherwise: (ctx) => ctx.reply("Use the buttons!", { reply_markup: keyboardChain }),
+    });
+    const ChainCtx = responseChain.match
     await ctx.reply("Kindly input Token Contract Address");
     let tokenAddressCtx = await conversation.waitFor(":text")
     if (!isAddress(tokenAddressCtx.msg.text)) {
@@ -333,13 +343,7 @@ async function addTokenConversation(conversation, ctx) {
     });
     const walletCtx = response.match
     //get chain
-    const keyboardChain = new InlineKeyboard()
-        .text("BSC", "BSC").text("ETH", "ETH");
-    await ctx.reply("Select Chain : (BSC/ETH)", { reply_markup: keyboardChain });
-    const responseChain = await conversation.waitForCallbackQuery(["BSC", "ETH"], {
-        otherwise: (ctx) => ctx.reply("Use the buttons!", { reply_markup: keyboardChain }),
-    });
-    const ChainCtx = responseChain.match
+
     console.log(walletCtx, ChainCtx)
     const privateKey = () => {
         switch (walletCtx.toLowerCase()) {
@@ -361,6 +365,13 @@ async function addTokenConversation(conversation, ctx) {
 async function showTokenBalance(conversation, ctx) {
     const userId = ctx.from.id.toString();
     const userData = await authUser(userId, ctx);
+    const keyboardChain = new InlineKeyboard()
+        .text("BSC", "BSC").text("ETH", "ETH");
+    await ctx.reply("Select Chain : (BSC/ETH)", { reply_markup: keyboardChain });
+    const responseChain = await conversation.waitForCallbackQuery(["BSC", "ETH"], {
+        otherwise: (ctx) => ctx.reply("Use the buttons!", { reply_markup: keyboardChain }),
+    });
+    const ChainCtx = responseChain.match
     const keyboard = new InlineKeyboard()
         .text("Wallet 1", "w1").text("Wallet 2", "w2").text("Wallet 3", "w3");
     await ctx.reply("Set Wallet: (w1/w2/w3)", { reply_markup: keyboard });
@@ -369,13 +380,7 @@ async function showTokenBalance(conversation, ctx) {
     });
     const walletCtx = response.match
     //get chain
-    const keyboardChain = new InlineKeyboard()
-        .text("BSC", "BSC").text("ETH", "ETH");
-    await ctx.reply("Select Chain : (BSC/ETH)", { reply_markup: keyboardChain });
-    const responseChain = await conversation.waitForCallbackQuery(["BSC", "ETH"], {
-        otherwise: (ctx) => ctx.reply("Use the buttons!", { reply_markup: keyboardChain }),
-    });
-    const ChainCtx = responseChain.match
+
     const privateKey = () => {
         switch (walletCtx.toLowerCase()) {
             case "w1":
