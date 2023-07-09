@@ -245,6 +245,13 @@ async function sellConversation(conversation, ctx) {
 async function buyConversation(conversation, ctx) {
     const userId = ctx.from.id.toString();
     const userData = await authUser(userId, ctx)
+    const keyboardChain = new InlineKeyboard()
+        .text("BSC", "BSC").text("ETH", "ETH");
+    await ctx.reply("Select Chain : (BSC/ETH)", { reply_markup: keyboardChain });
+    const responseChain = await conversation.waitForCallbackQuery(["BSC", "ETH"], {
+        otherwise: (ctx) => ctx.reply("Use the buttons!", { reply_markup: keyboardChain }),
+    });
+    const ChainCtx = responseChain.match
     //token
     await ctx.reply("Kindly input Purchase Contract Address");
     let tokenAddressCtx = await conversation.waitFor(":text")
@@ -280,13 +287,7 @@ async function buyConversation(conversation, ctx) {
     });
     const walletCtx = response.match
     //get chain
-    const keyboardChain = new InlineKeyboard()
-        .text("BSC", "BSC").text("ETH", "ETH");
-    await ctx.reply("Select Chain : (BSC/ETH)", { reply_markup: keyboardChain });
-    const responseChain = await conversation.waitForCallbackQuery(["BSC", "ETH"], {
-        otherwise: (ctx) => ctx.reply("Use the buttons!", { reply_markup: keyboardChain }),
-    });
-    const ChainCtx = responseChain.match
+
     console.log(tokenAddressCtx.msg.text, amountCtx, slippageCtx, ChainCtx, walletCtx)
     //check for gasFee, gas balance
     const bscGasPrice = await getGasPrice(BSC_TESTNET.rpc)
