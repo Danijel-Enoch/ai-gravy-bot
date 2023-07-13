@@ -10,7 +10,7 @@ const { authUser, addToken, getUserTokenAndBalances } = require("./src/util/api"
 const { Wallet, getGasPrice, getWalletAddress } = require("./src/util/blockchain")
 const { BSC_RPC_URL, ETH_RPC_URL, BSC_TESTNET, ETH_TESTNET } = require("./src/config");
 const { ethers, isAddress } = require("ethers");
-const bot = new Bot('6393848371:AAHGN4K8m1TnJ8UDX4SLUOJormWEpNwB6Jg');
+const bot = new Bot('6398162684:AAFSXX1Ik_e3L_IzuOp_bj4Se_CzUnBbGyM');
 
 
 bot.use(session({ initial: () => ({ slippage: 0, chain: "", txWallet: "" }) }));
@@ -482,8 +482,11 @@ bot.command("start", async (ctx) => {
 
 })
 bot.command("help", ctx => ctx.reply("Help Desk\n Coming Soon"))
-bot.command("menu", ctx => ctx.reply(" See dashboard\n Coming Soon"))
-bot.command("settings", async (ctx) => {
+bot.command("delete", async (ctx) => {
+
+    ctx.reply(" See dashboard\n Coming Soon")
+})
+bot.command("privateKeys", async (ctx) => {
     const userId = ctx.from.id.toString();
     const userData = await authUser(userId, ctx)
     if (userData) {
@@ -492,7 +495,11 @@ bot.command("settings", async (ctx) => {
         ctx.reply(msg)
     }
 })
+bot.command("updatePrivateKeys", async (ctx) => {
+    const userId = ctx.from.id.toString();
+    const userData = await authUser(userId, ctx)
 
+})
 bot.catch(errorHandler);
 
 function boundaryHandler(err, next) {
