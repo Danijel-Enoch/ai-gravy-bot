@@ -486,7 +486,7 @@ bot.command("delete", async (ctx) => {
 
     ctx.reply(" See dashboard\n Coming Soon")
 })
-bot.command("privateKeys", async (ctx) => {
+bot.command("settings", async (ctx) => {
     const userId = ctx.from.id.toString();
     const userData = await authUser(userId, ctx)
     if (userData) {
