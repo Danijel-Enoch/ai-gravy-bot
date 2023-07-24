@@ -1,5 +1,5 @@
 const { Telegraf, Markup } = require("telegraf");
-const { Bot, Context, session, InlineKeyboard, webhookCallback, GrammyError } = require("grammy");
+const { Bot, Context, session, InlineKeyboard, webhookCallback, GrammyError, HttpError } = require("grammy");
 const { Menu } = require("@grammyjs/menu");
 const {
     conversations,
