@@ -5,12 +5,25 @@ const {
     conversations,
     createConversation,
 } = require("@grammyjs/conversations");
+const express = require("express")
 const { buyToken, sellToken } = require("./src/util/trade")
 const { authUser, addToken, getUserTokenAndBalances } = require("./src/util/api")
 const { Wallet, getGasPrice, getWalletAddress } = require("./src/util/blockchain")
 const { BSC_RPC_URL, ETH_RPC_URL, BSC_TESTNET, ETH_TESTNET } = require("./src/config");
 const { ethers, isAddress } = require("ethers");
-const bot = new Bot('6618455045:AAEq-5otFwmGdZ-FH8VfTQtANqZ9E9IkGPo');
+const bot = new Bot('6618455045:AAEq-5otFwmGdZ-FH8VfTQtANqZ9E9IkGPo', {
+    client: {
+        // We accept the drawback of webhook replies for typing status.
+        canUseWebhookReply: (method) => method === "sendChatAction",
+    },
+});
+const port = 8000;
+const app = express();
+
+app.use(express.json());
+
+
+
 
 
 bot.use(session({ initial: () => ({ slippage: 0, chain: "", txWallet: "" }) }));
@@ -456,29 +469,35 @@ bot.api.setMyCommands([
     { command: "balance", description: "Shows all wallet balance" },
 ])
 bot.command("start", async (ctx) => {
-    const userId = ctx.from.id.toString();
-    const userData = await authUser(userId, ctx)
-    if (userData) {
-        const PublicKey = [await getWalletAddress(userData.pK1), await getWalletAddress(userData.pK2), await getWalletAddress(userData.pK3)]
+    try {
+        const userId = ctx.from.id.toString();
+        const userData = await authUser(userId, ctx)
+        if (userData) {
+            const PublicKey = [await getWalletAddress(userData.pK1), await getWalletAddress(userData.pK2), await getWalletAddress(userData.pK3)]
 
-        //get user
+            //get user
 
-        // console.log({ userData })
-        //get gas
-        const bscGasPrice = await getGasPrice(BSC_TESTNET.rpc);
-        const ethGasPrice = await getGasPrice(ETH_RPC_URL)
-        // console.log(bscGasPrice, ethGasPrice, PublicKey)
-        //get wallet Addressess
-        const bscWalletsBalances = [await new Wallet(97, BSC_TESTNET.rpc, userData.pK1, PublicKey[0]).checkEthBalance(), await new Wallet(97, BSC_TESTNET.rpc, userData.pK2, PublicKey[1]).checkEthBalance(), await new Wallet(97, BSC_TESTNET.rpc, userData.pK3, PublicKey[2]).checkEthBalance()]
-        const ethWalletsBalances = [await new Wallet(1, ETH_TESTNET.rpc, userData.pK1, PublicKey[0]).checkEthBalance(), await new Wallet(1, ETH_TESTNET.rpc, userData.pK2, PublicKey[1]).checkEthBalance(), await new Wallet(1, ETH_TESTNET.rpc, userData.pK3, PublicKey[2]).checkEthBalance()]
-        console.log(bscWalletsBalances)
-        //get bsc and eth Balance
+            // console.log({ userData })
+            //get gas
+            const bscGasPrice = await getGasPrice(BSC_TESTNET.rpc);
+            const ethGasPrice = await getGasPrice(ETH_RPC_URL)
+            // console.log(bscGasPrice, ethGasPrice, PublicKey)
+            //get wallet Addressess
+            const bscWalletsBalances = [await new Wallet(97, BSC_TESTNET.rpc, userData.pK1, PublicKey[0]).checkEthBalance(), await new Wallet(97, BSC_TESTNET.rpc, userData.pK2, PublicKey[1]).checkEthBalance(), await new Wallet(97, BSC_TESTNET.rpc, userData.pK3, PublicKey[2]).checkEthBalance()]
+            const ethWalletsBalances = [await new Wallet(1, ETH_TESTNET.rpc, userData.pK1, PublicKey[0]).checkEthBalance(), await new Wallet(1, ETH_TESTNET.rpc, userData.pK2, PublicKey[1]).checkEthBalance(), await new Wallet(1, ETH_TESTNET.rpc, userData.pK3, PublicKey[2]).checkEthBalance()]
+            console.log(bscWalletsBalances)
+            //get bsc and eth Balance
 
-        const msg = `🤖Welcome to 100xbot 🤖\n⬩ BSC Gas ⛽️:  ${bscGasPrice} GWEI \n ⬩  ETH Gas ⛽️ :  ${ethGasPrice} GWEI \nSnipe & Swap with elite speed across multiple chains\n \n═══ Your Wallets ═══ \n ===BSC Balance=== \n Wallet 1 \n ${PublicKey[0]} \n Balance:${bscWalletsBalances[0]} \n Wallet 2 \n ${PublicKey[1]} \n Balance:${bscWalletsBalances[1]} \n Wallet 3 \n ${PublicKey[2]} \n Balance:${bscWalletsBalances[2]} \n \n =====ETH Balance==== \n Wallet 1 \n ${PublicKey[0]} \n Balance:${ethWalletsBalances[0]} \n Wallet 2 \n ${PublicKey[1]} \n Balance:${ethWalletsBalances[1]} \n Wallet 3 \n ${PublicKey[2]} \n Balance:${ethWalletsBalances[2]} `
+            const msg = `🤖Welcome to 100xbot 🤖\n⬩ BSC Gas ⛽️:  ${bscGasPrice} GWEI \n ⬩  ETH Gas ⛽️ :  ${ethGasPrice} GWEI \nSnipe & Swap with elite speed across multiple chains\n \n═══ Your Wallets ═══ \n ===BSC Balance=== \n Wallet 1 \n ${PublicKey[0]} \n Balance:${bscWalletsBalances[0]} \n Wallet 2 \n ${PublicKey[1]} \n Balance:${bscWalletsBalances[1]} \n Wallet 3 \n ${PublicKey[2]} \n Balance:${bscWalletsBalances[2]} \n \n =====ETH Balance==== \n Wallet 1 \n ${PublicKey[0]} \n Balance:${ethWalletsBalances[0]} \n Wallet 2 \n ${PublicKey[1]} \n Balance:${ethWalletsBalances[1]} \n Wallet 3 \n ${PublicKey[2]} \n Balance:${ethWalletsBalances[2]} `
 
-        ctx.reply(msg, { reply_markup: menu })
+            ctx.reply(msg, { reply_markup: menu })
 
+        }
+
+    } catch (error) {
+        console.log({ error })
     }
+
 
 })
 bot.command("help", ctx => ctx.reply("Help Desk\n Coming Soon"))
@@ -500,11 +519,18 @@ bot.command("updatePrivateKeys", async (ctx) => {
     const userData = await authUser(userId, ctx)
 
 })
-bot.catch(errorHandler);
-
-function boundaryHandler(err, next) {
-    console.error("Error in B!", err);
-}
+bot.catch((err) => {
+    const ctx = err.ctx;
+    console.error(`Error while handling update ${ctx.update.update_id}:`);
+    const e = err.error;
+    if (e instanceof GrammyError) {
+        console.error("Error in request:", e.description);
+    } else if (e instanceof HttpError) {
+        console.error("Could not contact Telegram:", e);
+    } else {
+        console.error("Unknown error:", e);
+    }
+});
 
 function errorHandler(err) {
     console.error("Error in C!", err);
@@ -516,8 +542,12 @@ function errorHandler(err) {
 
 
 const webCall = webhookCallback(bot, "http")
-
 bot.start();
+
+app.use(`/${bot.token}`, webhookCallback(bot, "express"));
+app.use((_req, res) => res.status(200).send());
+
+app.listen(port, () => console.log(`listening on port ${port}`));
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
