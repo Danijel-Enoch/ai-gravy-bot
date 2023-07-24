@@ -10,7 +10,7 @@ const { authUser, addToken, getUserTokenAndBalances } = require("./src/util/api"
 const { Wallet, getGasPrice, getWalletAddress } = require("./src/util/blockchain")
 const { BSC_RPC_URL, ETH_RPC_URL, BSC_TESTNET, ETH_TESTNET } = require("./src/config");
 const { ethers, isAddress } = require("ethers");
-const bot = new Bot('6363717865:AAG_4-2gyglT3irLDDuLR-BQpenBXRUA7i8');
+const bot = new Bot('6618455045:AAEq-5otFwmGdZ-FH8VfTQtANqZ9E9IkGPo');
 
 
 bot.use(session({ initial: () => ({ slippage: 0, chain: "", txWallet: "" }) }));
@@ -474,7 +474,7 @@ bot.command("start", async (ctx) => {
         console.log(bscWalletsBalances)
         //get bsc and eth Balance
 
-        const msg = `🤖Welcome to Lighteningfastbot 🤖\n⬩ BSC Gas ⛽️:  ${bscGasPrice} GWEI \n ⬩  ETH Gas ⛽️ :  ${ethGasPrice} GWEI \nSnipe & Swap with elite speed across multiple chains\n \n═══ Your Wallets ═══ \n ===BSC Balance=== \n Wallet 1 \n ${PublicKey[0]} \n Balance:${bscWalletsBalances[0]} \n Wallet 2 \n ${PublicKey[1]} \n Balance:${bscWalletsBalances[1]} \n Wallet 3 \n ${PublicKey[2]} \n Balance:${bscWalletsBalances[2]} \n \n =====ETH Balance==== \n Wallet 1 \n ${PublicKey[0]} \n Balance:${ethWalletsBalances[0]} \n Wallet 2 \n ${PublicKey[1]} \n Balance:${ethWalletsBalances[1]} \n Wallet 3 \n ${PublicKey[2]} \n Balance:${ethWalletsBalances[2]} `
+        const msg = `🤖Welcome to 100xbot 🤖\n⬩ BSC Gas ⛽️:  ${bscGasPrice} GWEI \n ⬩  ETH Gas ⛽️ :  ${ethGasPrice} GWEI \nSnipe & Swap with elite speed across multiple chains\n \n═══ Your Wallets ═══ \n ===BSC Balance=== \n Wallet 1 \n ${PublicKey[0]} \n Balance:${bscWalletsBalances[0]} \n Wallet 2 \n ${PublicKey[1]} \n Balance:${bscWalletsBalances[1]} \n Wallet 3 \n ${PublicKey[2]} \n Balance:${bscWalletsBalances[2]} \n \n =====ETH Balance==== \n Wallet 1 \n ${PublicKey[0]} \n Balance:${ethWalletsBalances[0]} \n Wallet 2 \n ${PublicKey[1]} \n Balance:${ethWalletsBalances[1]} \n Wallet 3 \n ${PublicKey[2]} \n Balance:${ethWalletsBalances[2]} `
 
         ctx.reply(msg, { reply_markup: menu })
 
@@ -491,7 +491,7 @@ bot.command("settings", async (ctx) => {
     const userData = await authUser(userId, ctx)
     if (userData) {
         const PublicKey = [await getWalletAddress(userData.pK1), await getWalletAddress(userData.pK2), await getWalletAddress(userData.pK3)]
-        const msg = `🤖 Setting🤖\n⬩ ======= Wallets ======== \n Wallet 1 \n ${PublicKey[0]} \n Private Key \n:${userData.pK1} \n Wallet 2 \n ${PublicKey[1]} \n Private Key \n:${userData.pK2} \n Wallet 3 \n ${PublicKey[2]} \n Private Key \n:${userData.pK3} \n \n \n Kindly make sure to pls keep private key safe`
+        const msg = `🤖 100xbot Setting🤖\n⬩ ======= Wallets ======== \n Wallet 1 \n ${PublicKey[0]} \n Private Key \n:${userData.pK1} \n Wallet 2 \n ${PublicKey[1]} \n Private Key \n:${userData.pK2} \n Wallet 3 \n ${PublicKey[2]} \n Private Key \n:${userData.pK3} \n \n \n Kindly make sure to pls keep private key safe`
         ctx.reply(msg)
     }
 })
