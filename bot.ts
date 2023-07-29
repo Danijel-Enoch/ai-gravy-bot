@@ -30,7 +30,7 @@ import {
 	sellLimitConversation,
 	getOrders,
 } from "./src/routes/limit-orders";
-const bot: any = new Bot("5661676335:AAF1z0yuo2mr7fPr_-J2G0SI7mSc8HvQTog", {
+const bot: any = new Bot("6618455045:AAEq-5otFwmGdZ-FH8VfTQtANqZ9E9IkGPo", {
 	client: {
 		// We accept the drawback of webhook replies for typing status.
 		canUseWebhookReply: (method) => method === "sendChatAction",
