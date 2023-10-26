@@ -91,17 +91,17 @@ function withdrawTokenConversation(conversation, ctx) {
         withdrawWallet
             .sendErc20Token(reAddressCtx.msg.text, amountCtx.msg.text, tokenAddressCtx.msg.text)
             .then((res) => {
-            console.log(res);
-            ctx.reply("Sucessfully Sent");
-            ctx.reply(`Transaction receipt : ${selectScan(ChainCtx).page}/tx/` +
-                res.hash);
-        })
+                console.log(res);
+                ctx.reply("Sucessfully Sent");
+                ctx.reply(`Transaction receipt : ${selectScan(ChainCtx).page}/tx/` +
+                    res.hash);
+            })
             .catch((err) => {
-            console.log(err.info.error.message);
-            let error = JSON.parse(JSON.stringify(err));
-            console.log({ error });
-            ctx.reply(`Error Ocurred : \n ${err.info.error.message} \n ${error.code}`);
-        });
+                console.log(err.info.error.message);
+                let error = JSON.parse(JSON.stringify(err));
+                console.log({ error });
+                ctx.reply(`Error Ocurred : \n ${err.info.error.message} \n ${error.code}`);
+            });
     });
 }
 function withDrawEthConversation(conversation, ctx) {
@@ -193,16 +193,16 @@ function withDrawEthConversation(conversation, ctx) {
         yield withdrawWallet
             .sendEth(reAddressCtx.msg.text, amountToWithDraw.toString())
             .then((res) => {
-            ctx.reply("sucessfully sent");
-            console.log({ res });
-            ctx.reply(`Transaction receipt : ${selectScan(ChainCtx.toUpperCase()).page}/tx/` + res.hash);
-        })
+                ctx.reply("sucessfully sent");
+                console.log({ res });
+                ctx.reply(`Transaction receipt : ${selectScan(ChainCtx.toUpperCase()).page}/tx/` + res.hash);
+            })
             .catch((err) => {
-            console.log(err.info.error.message);
-            let error = JSON.parse(JSON.stringify(err));
-            console.log({ error });
-            ctx.reply(`Error Ocurred : \n ${err.info.error.message} \n ${error.code}`);
-        });
+                console.log(err.info.error.message);
+                let error = JSON.parse(JSON.stringify(err));
+                console.log({ error });
+                ctx.reply(`Error Ocurred : \n ${err.info.error.message} \n ${error.code}`);
+            });
         //get amount amout to withdraw
         //get recieving Wallet
     });
@@ -646,7 +646,7 @@ bot.command("start", (ctx) => __awaiter(void 0, void 0, void 0, function* () {
             ];
             console.log(bscWalletsBalances);
             //get bsc and eth Balance
-            const msg = `🤖Welcome to 100xbot 🤖\n⬩ BSC Gas ⛽️:  ${bscGasPrice} GWEI \n ⬩  ETH Gas ⛽️ :  ${ethGasPrice} GWEI \nSnipe & Swap with elite speed across multiple chains\n \n═══ Your Wallets ═══ \n ===BSC Balance=== \n Wallet 1 \n ${PublicKey[0]} \n Balance:${bscWalletsBalances[0]} \n Wallet 2 \n ${PublicKey[1]} \n Balance:${bscWalletsBalances[1]} \n Wallet 3 \n ${PublicKey[2]} \n Balance:${bscWalletsBalances[2]} \n \n =====ETH Balance==== \n Wallet 1 \n ${PublicKey[0]} \n Balance:${ethWalletsBalances[0]} \n Wallet 2 \n ${PublicKey[1]} \n Balance:${ethWalletsBalances[1]} \n Wallet 3 \n ${PublicKey[2]} \n Balance:${ethWalletsBalances[2]} `;
+            const msg = `🤖Welcome to myTestBotbot 🤖\n⬩ BSC Gas ⛽️:  ${bscGasPrice} GWEI \n ⬩  ETH Gas ⛽️ :  ${ethGasPrice} GWEI \nSnipe & Swap with elite speed across multiple chains\n \n═══ Your Wallets ═══ \n ===BSC Balance=== \n Wallet 1 \n ${PublicKey[0]} \n Balance:${bscWalletsBalances[0]} \n Wallet 2 \n ${PublicKey[1]} \n Balance:${bscWalletsBalances[1]} \n Wallet 3 \n ${PublicKey[2]} \n Balance:${bscWalletsBalances[2]} \n \n =====ETH Balance==== \n Wallet 1 \n ${PublicKey[0]} \n Balance:${ethWalletsBalances[0]} \n Wallet 2 \n ${PublicKey[1]} \n Balance:${ethWalletsBalances[1]} \n Wallet 3 \n ${PublicKey[2]} \n Balance:${ethWalletsBalances[2]} `;
             ctx.reply(msg, { reply_markup: menu });
         }
     }
@@ -667,7 +667,7 @@ bot.command("settings", (ctx) => __awaiter(void 0, void 0, void 0, function* () 
             yield (0, blockchain_1.getWalletAddress)(userData.pK2),
             yield (0, blockchain_1.getWalletAddress)(userData.pK3),
         ];
-        const msg = `🤖 100xbot Setting🤖\n⬩ ======= Wallets ======== \n Wallet 1 \n ${PublicKey[0]} \n Private Key \n:${userData.pK1} \n Wallet 2 \n ${PublicKey[1]} \n Private Key \n:${userData.pK2} \n Wallet 3 \n ${PublicKey[2]} \n Private Key \n:${userData.pK3} \n \n \n Kindly make sure to pls keep private key safe`;
+        const msg = `🤖 myTestBotbot Setting🤖\n⬩ ======= Wallets ======== \n Wallet 1 \n ${PublicKey[0]} \n Private Key \n:${userData.pK1} \n Wallet 2 \n ${PublicKey[1]} \n Private Key \n:${userData.pK2} \n Wallet 3 \n ${PublicKey[2]} \n Private Key \n:${userData.pK3} \n \n \n Kindly make sure to pls keep private key safe`;
         ctx.reply(msg);
     }
 }));

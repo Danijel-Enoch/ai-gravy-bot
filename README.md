@@ -1,1 +1,1 @@
-100x bot
+myTestBot bot
