@@ -1,1 +1,1 @@
-myTestBot bot
+Marksman Bot bot
