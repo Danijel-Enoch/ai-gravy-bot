@@ -1,21 +1,7 @@
-import { Telegraf, Markup } from "telegraf";
-import {
-	Bot,
-	Context,
-	session,
-	InlineKeyboard,
-	webhookCallback,
-	GrammyError,
-	HttpError,
-} from "grammy";
+import { BotWorker } from "@grammyjs/runner";
+import { session, InlineKeyboard } from "grammy";
 import { Menu } from "@grammyjs/menu";
-import {
-	conversations,
-	createConversation,
-	ConversationFn,
-} from "@grammyjs/conversations";
-import express = require("express");
-import { distribute, run } from "@grammyjs/runner";
+import { conversations, createConversation } from "@grammyjs/conversations";
 import { buyToken, sellToken } from "./src/util/trade";
 import { authUser, addToken, getUserTokenAndBalances } from "./src/util/api";
 import { Wallet, getGasPrice, getWalletAddress } from "./src/util/blockchain";
@@ -31,11 +17,11 @@ import {
 	sellLimitConversation,
 	getOrders,
 } from "./src/routes/limit-orders";
-const bot: any = new Bot("5661676335:AAF1z0yuo2mr7fPr_-J2G0SI7mSc8HvQTog");
-const port = 8000;
-const app = express();
 
-app.use(express.json());
+// Create a new bot worker.
+const bot: any = new BotWorker(
+	"5661676335:AAF1z0yuo2mr7fPr_-J2G0SI7mSc8HvQTog"
+);
 
 bot.use(session({ initial: () => ({ slippage: 0, chain: "", txWallet: "" }) }));
 bot.use(conversations());
@@ -1077,27 +1063,3 @@ bot.command("updatePrivateKeys", async (ctx: any) => {
 	const userId = ctx.from.id.toString();
 	const userData = await authUser(userId, ctx);
 });
-bot.catch((err: { ctx: any; error: any }) => {
-	const ctx = err.ctx;
-	console.error(`Error while handling update ${ctx.update.update_id}:`);
-	const e = err.error;
-	if (e instanceof GrammyError) {
-		console.error("Error in request:", e.description);
-	} else if (e instanceof HttpError) {
-		console.error("Could not contact Telegram:", e);
-	} else {
-		console.error("Unknown error:", e);
-	}
-});
-
-function errorHandler(err: any) {
-	console.error("Error in C!", err);
-}
-
-bot.use(distribute(__dirname + "/worker"));
-run(bot);
-
-// app.use(`/${bot.token}`, webhookCallback(bot, "express"));
-// app.use((_req, res) => res.status(200).send());
-
-// app.listen(port, () => console.log(`listening on port ${port}`));
