@@ -1,9 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import { GenerateWallet } from "./blockchain";
 import axios from "axios";
-const supabaseUrl = "https://auswwgwgwrvdcalpueit.supabase.co";
+const supabaseUrl = "https://dxxhlgvftegkivncnblj.supabase.co";
 const supabaseKey =
-	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1c3d3Z3dnd3J2ZGNhbHB1ZWl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODg1ODExNDksImV4cCI6MjAwNDE1NzE0OX0.hUN5bxHBK4aJXGBTI5lWFb-oIAWoCnBfcXbljb5vM8Y";
+	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4eGhsZ3ZmdGVna2l2bmNuYmxqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4Nzk1MjIwNiwiZXhwIjoyMDAzNTI4MjA2fQ.odHwIH0u5WV_sLTV_0DRkK8eKLvt7LftT8R-_LeDxck";
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 export async function authUser(userId, ctx) {
@@ -22,7 +22,7 @@ export async function authUser(userId, ctx) {
 			// ctx.reply("Registering......")
 			try {
 				const response = await axios.post(
-					"https://auswwgwgwrvdcalpueit.supabase.co/rest/v1/botUsers",
+					`${supabaseUrl}/rest/v1/botUsers`,
 					// '{ "some_column": "someValue", "other_column": "otherValue" }',
 					{
 						pK1,
@@ -73,7 +73,7 @@ export async function addToken(
 ) {
 	try {
 		const res = await axios.post(
-			"https://auswwgwgwrvdcalpueit.supabase.co/rest/v1/botUserTokens",
+			`${supabaseUrl}/rest/v1/botUserTokens`,
 			// '{ "some_column": "someValue", "other_column": "otherValue" }',
 			{
 				userID,

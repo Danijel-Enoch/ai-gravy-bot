@@ -30,7 +30,7 @@ import {
 	sellLimitConversation,
 	getOrders,
 } from "./src/routes/limit-orders";
-const bot: any = new Bot("5985510450:AAHiuCr6-_EahxR9Z0I6VYYg-1K3WfNRsOM", {
+const bot: any = new Bot("5661676335:AAF1z0yuo2mr7fPr_-J2G0SI7mSc8HvQTog", {
 	client: {
 		// We accept the drawback of webhook replies for typing status.
 		canUseWebhookReply: (method) => method === "sendChatAction",
@@ -1101,7 +1101,7 @@ function errorHandler(err: any) {
 const webCall = webhookCallback(bot, "http");
 bot.start();
 
-app.use(`/${bot.token}`, webhookCallback(bot, "express"));
-app.use((_req, res) => res.status(200).send());
+// app.use(`/${bot.token}`, webhookCallback(bot, "express"));
+// app.use((_req, res) => res.status(200).send());
 
-app.listen(port, () => console.log(`listening on port ${port}`));
+// app.listen(port, () => console.log(`listening on port ${port}`));
