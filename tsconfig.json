@@ -6,5 +6,6 @@
    "rootDir": "./",
    "strict": true,
     "noImplicitAny": false,
+    "skipLibCheck": true
   }
 }
