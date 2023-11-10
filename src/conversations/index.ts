@@ -67,7 +67,7 @@ export async function predictMarkeCapConversation(
 			console.log(json.prediction);
 
 			ctx.reply(
-				`The Prediction for this ${name.msg.text.toString()} is ${
+				`The Prediction for this ${name.msg.text.toString()} marketcap is ${
 					json.prediction
 				} \n Note: DYOR, 🧐 This GPT model is in beta state and still undergoing training. 🔄`
 			);
