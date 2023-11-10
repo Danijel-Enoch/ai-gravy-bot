@@ -13,7 +13,7 @@ type MyContext = Context & ConversationFlavor;
 type MyConversation = Conversation<MyContext>;
 
 const bot = new Bot<MyContext>(
-	"6910977386:AAEpWPV04nggB4uqVABvcV53-l7-AMYkhY8"
+	"6588439971:AAGX4GXGh_L5P-xLcB9Jjmam5waXbKCS4Og"
 );
 
 bot.use(
