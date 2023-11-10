@@ -29,4 +29,3 @@ jobs:
     - run: npm i
     - run: npm install typescript
     - run: npm run build
-    - run:  npx pm2 restart trade-bot
